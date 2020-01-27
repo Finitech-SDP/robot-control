@@ -3,8 +3,8 @@
 This is the robot control script written in python.
 Using scp main.py robot@ip_address:/home/robot to send the main script to the EV3 machine, run the script during the console.
 And you can give simple commands to the EV3.
-## Shortcut
-# Direction
+## Terminology
+### Direction
 F: Forward
 B: Backward
 L: Left
@@ -13,7 +13,7 @@ FR: FowardRight
 FL: FowardLeft
 BR: BackwardRight
 BL: BackwardLeft
-# Rotation
+### Rotation
 RA: Rotate anti clockwise
 RC: Rotate clockwise
 ## Basic command format
