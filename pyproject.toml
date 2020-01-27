@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sdp"
+version = "0.1.0"
+description = ""
+authors = ["Yuanbo <sybtxd1@yahoo.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^19.10b0"
+pylint = "^2.4.4"
+python-ev3dev2 = "^2.0.0"
+python-ev3dev = "^1.2.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

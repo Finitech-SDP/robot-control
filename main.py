@@ -51,7 +51,7 @@ def moveBackwardRight():
     return None
 
 
-def rotateClockwise(angle):
+def rotateAntiClockwise(angle):
     angle /= 360
     angle *= 1390
     fwdLeft.run_to_rel_pos(position_sp=angle, speed_sp=300)
@@ -60,7 +60,7 @@ def rotateClockwise(angle):
     bwdRight.run_to_rel_pos(position_sp=angle, speed_sp=300)
 
 
-def rotateAntiClockwise(angle):
+def rotateClockwise(angle):
     angle /= 360
     angle *= 1390
     fwdLeft.run_to_rel_pos(position_sp=-angle, speed_sp=300)
@@ -80,9 +80,9 @@ can be seen as [direction speed(percentage) duration(ms)] or
 # fwdRight = LargeMotor(OUTPUT_A)
 # bwdLeft = LargeMotor(OUTPUT_D)
 # bwdRight = LargeMotor(OUTPUT_C)
-fwdLeft = ev3.LargeMotor("outB")
-fwdRight = ev3.LargeMotor("outA")
-bwdLeft = ev3.LargeMotor("outD")
+fwdLeft = ev3.LargeMotor("outA")
+fwdRight = ev3.LargeMotor("outD")
+bwdLeft = ev3.LargeMotor("outB")
 bwdRight = ev3.LargeMotor("outC")
 if not (
     fwdLeft.connected
