@@ -1,28 +1,30 @@
 #! /usr/bin/env python3
 import re
-from ev3dev2.motor import (
-    LargeMotor,
-    OUTPUT_A,
-    OUTPUT_B,
-    OUTPUT_C,
-    OUTPUT_D,
-    MoveTank,
-    MoveSteering,
-)
+
+# from ev3dev2.motor import (
+#     LargeMotor,
+#     OUTPUT_A,
+#     OUTPUT_B,
+#     OUTPUT_C,
+#     OUTPUT_D,
+#     MoveTank,
+#     MoveSteering,
+# )
+import ev3dev.ev3 as ev3
 
 
 def moveFoward(speed, time):
-    fwdRight.on_for_seconds(speed, time)
-    fwdLeft.on_for_seconds(speed, time)
-    bwdLeft.on_for_seconds(-speed, time)
-    bwdRight.on_for_seconds(-speed, time)
+    fwdRight.run_timed(speed_sp=speed, time_sp=time)
+    fwdLeft.run_timed(speed_sp=speed, time_sp=time)
+    bwdLeft.run_timed(speed_sp=-speed, time_sp=time)
+    bwdRight.run_timed(speed_sp=-speed, time_sp=time)
 
 
 def moveBackward(speed, time):
-    fwdRight.on_for_seconds(-speed, time)
-    fwdLeft.on_for_seconds(-speed, time)
-    bwdLeft.on_for_seconds(speed, time)
-    bwdRight.on_for_seconds(speed, time)
+    fwdRight.run_timed(speed_sp=-speed, time_sp=time)
+    fwdLeft.run_timed(speed_sp=-speed, time_sp=time)
+    bwdLeft.run_timed(speed_sp=speed, time_sp=time)
+    bwdRight.run_timed(speed_sp=speed, time_sp=time)
 
 
 def moveLeft():
@@ -50,17 +52,21 @@ def moveBackwardRight():
 
 
 def rotateClockwise(angle):
-    fwdLeft.on_for_rotations(speed=50, rotations=angle)
-    fwdRight.on_for_rotations(speed=-50, rotations=angle)
-    bwdLeft.on_for_rotations(speed=-50, rotations=angle)
-    bwdRight.on_for_rotations(speed=50, rotations=angle)
+    angle /= 360
+    angle *= 1390
+    fwdLeft.run_to_rel_pos(position_sp=angle, speed_sp=300)
+    fwdRight.run_to_rel_pos(position_sp=-angle, speed_sp=300)
+    bwdLeft.run_to_rel_pos(position_sp=-angle, speed_sp=300)
+    bwdRight.run_to_rel_pos(position_sp=angle, speed_sp=300)
 
 
 def rotateAntiClockwise(angle):
-    fwdLeft.on_for_rotations(speed=-50, rotations=angle)
-    fwdRight.on_for_rotations(speed=50, rotations=angle)
-    bwdLeft.on_for_rotations(speed=50, rotations=angle)
-    bwdRight.on_for_rotations(speed=-50, rotations=angle)
+    angle /= 360
+    angle *= 1390
+    fwdLeft.run_to_rel_pos(position_sp=-angle, speed_sp=300)
+    fwdRight.run_to_rel_pos(position_sp=angle, speed_sp=300)
+    bwdLeft.run_to_rel_pos(position_sp=angle, speed_sp=300)
+    bwdRight.run_to_rel_pos(position_sp=-angle, speed_sp=300)
 
 
 # "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (\d*))|((RA|RC) (360|3[0-5][0-9]|[0-2]?[0-9]{1,2}))"
@@ -70,10 +76,21 @@ command_re = "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (\d*))|((RA|RC) (\d*))"
     ((RA|RC) (360|3[0-5][0-9]|[0-2]?[0-9]{1,2}))
 can be seen as [direction speed(percentage) duration(ms)] or
  [rotate_direction rotate angles]"""
-fwdLeft = LargeMotor(OUTPUT_B)
-fwdRight = LargeMotor(OUTPUT_A)
-bwdLeft = LargeMotor(OUTPUT_D)
-bwdRight = LargeMotor(OUTPUT_C)
+# fwdLeft = LargeMotor(OUTPUT_B)
+# fwdRight = LargeMotor(OUTPUT_A)
+# bwdLeft = LargeMotor(OUTPUT_D)
+# bwdRight = LargeMotor(OUTPUT_C)
+fwdLeft = ev3.LargeMotor("outB")
+fwdRight = ev3.LargeMotor("outA")
+bwdLeft = ev3.LargeMotor("outD")
+bwdRight = ev3.LargeMotor("outC")
+if not (
+    fwdLeft.connected
+    and fwdRight.connected
+    and bwdLeft.connected
+    and bwdRight.connected
+):
+    print("motor are not connected")
 while True:
     command = input(">")
     m = re.fullmatch(command_re, command)
@@ -85,6 +102,8 @@ while True:
                 speed = 50  # by default 50% of its rated maximum speed
             else:
                 speed = int(m.group(3))
+            speed /= 100
+            speed *= 1050
             if m.group(4) == "":
                 time = 1000  # by default 1000ms
             else:
