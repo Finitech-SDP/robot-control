@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 
 import re
-import basic_movement as move
-
+import decode
 
 if __name__ == "__main__":
     # "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (\d*))|((RA|RC) (360|3[0-5][0-9]|[0-2]?[0-9]{1,2}))"
@@ -14,7 +13,7 @@ if __name__ == "__main__":
     instuction_set = []
 
     while True:
-        if not move.isMotorConnected():
+        if not decode.isMotorConnected():
             print("Motor is not well connected.")
             break
         command = input(">")  # Fetch input command.
@@ -23,7 +22,7 @@ if __name__ == "__main__":
             continue
         if command == "END":
             begin_list = False
-            move.decode(instuction_set)
+            decode.decode(instuction_set)
             instuction_set.clear()
             continue
         m = re.fullmatch(command_re, command)
@@ -33,4 +32,4 @@ if __name__ == "__main__":
             if begin_list:
                 instuction_set.append(m)
             else:
-                move.decode([m])
+                decode.decode([m])
