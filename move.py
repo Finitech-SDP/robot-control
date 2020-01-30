@@ -46,20 +46,32 @@ def moveRight():
     return None
 
 
-def moveForwardLeft():
-    return None
+def moveForwardLeft(speed, time):
+    FWDRIGHT.run_timed(speed_sp=speed / 2, time_sp=time)
+    FWDLEFT.run_timed(speed_sp=speed, time_sp=time)
+    BWDLEFT.run_timed(speed_sp=-speed, time_sp=time)
+    BWDRIGHT.run_timed(speed_sp=-speed / 2, time_sp=time)
 
 
-def moveForwardRight():
-    return None
+def moveForwardRight(speed, time):
+    FWDRIGHT.run_timed(speed_sp=speed, time_sp=time)
+    FWDLEFT.run_timed(speed_sp=speed / 2, time_sp=time)
+    BWDLEFT.run_timed(speed_sp=-speed / 2, time_sp=time)
+    BWDRIGHT.run_timed(speed_sp=-speed, time_sp=time)
 
 
-def moveBackwardLeft():
-    return None
+def moveBackwardLeft(speed, time):
+    FWDRIGHT.run_timed(speed_sp=-speed, time_sp=time)
+    FWDLEFT.run_timed(speed_sp=-speed / 2, time_sp=time)
+    BWDLEFT.run_timed(speed_sp=speed / 2, time_sp=time)
+    BWDRIGHT.run_timed(speed_sp=speed, time_sp=time)
 
 
-def moveBackwardRight():
-    return None
+def moveBackwardRight(speed, time):
+    FWDRIGHT.run_timed(speed_sp=-speed / 2, time_sp=time)
+    FWDLEFT.run_timed(speed_sp=-speed, time_sp=time)
+    BWDLEFT.run_timed(speed_sp=speed, time_sp=time)
+    BWDRIGHT.run_timed(speed_sp=speed / 2, time_sp=time)
 
 
 def stop():

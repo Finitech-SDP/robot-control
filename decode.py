@@ -46,7 +46,6 @@ def decode(instruction_list):
             else:
                 time = int(m.group(4))
             direction = m.group(2)
-            print(speed, time)
             my_dict[direction](speed, time)
         else:  # For rotate instruction
             direction = m.group(6)
