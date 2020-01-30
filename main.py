@@ -2,6 +2,8 @@
 
 import re
 import decode
+import move
+
 
 if __name__ == "__main__":
     # "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (\d*))|((RA|RC) (360|3[0-5][0-9]|[0-2]?[0-9]{1,2}))"
@@ -13,7 +15,7 @@ if __name__ == "__main__":
     instuction_set = []
 
     while True:
-        if not decode.isMotorConnected():
+        if not move.isMotorConnected():
             print("Motor is not well connected.")
             break
         command = input(">")  # Fetch input command.
