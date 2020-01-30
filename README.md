@@ -1,7 +1,7 @@
 # sdp
 # Introduction
 This is the robot control script written in python.
-Using scp main.py robot@ip_address:/home/robot to send the main script to the EV3 machine, run the script during the console.
+Using scp main.py `robot@ip_address(normally 192.168.105.4):/home/robot` to send the main script to the EV3 machine, run the script `./main.py`during the console.
 And you can give simple commands to the EV3.
 ## Terminology
 ### Direction
@@ -17,14 +17,14 @@ BL: BackwardLeft
 RA: Rotate anti clockwise
 RC: Rotate clockwise
 ## Basic command format
-### Direction speed time
+ `Direction` `speed` `time`
 Where speed has range 0-100, where 100 means it reaches EV3 motor's maximum rotate speed, 1050 degrees per second.
 Time is in milliseconds.
-### Rotation degree
+`Rotation` `degree`
 Wherer degree should be within 360 degrees.
-### BEGIN
+`BEGIN`
 Begin records a series of instruction
-### END
+`END`
 Stop recording, and execute the instructions from instruction list
 ## To do
 (Add your thinking here!)
