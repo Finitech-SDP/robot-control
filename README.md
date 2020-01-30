@@ -22,7 +22,9 @@ Where speed has range 0-100, where 100 means it reaches EV3 motor's maximum rota
 Time is in milliseconds.
 ### Rotation degree
 Wherer degree should be within 360 degrees.
+### BEGIN
+Begin records a series of instruction
+### END
+Stop recording, and execute the instructions from instruction list
 ## To do
-1. Store a list of command. Execute one by one.
-2. Add a switch function between moving and stopping. i.e switch between run and idle.
 (Add your thinking here!)
