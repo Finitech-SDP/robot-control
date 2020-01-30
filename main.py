@@ -19,6 +19,8 @@ if __name__ == "__main__":
             print("Motor is not well connected.")
             break
         command = input(">")  # Fetch input command.
+        if command == "STOP":
+            move.stop()
         if command == "BEGIN":
             begin_list = True
             continue

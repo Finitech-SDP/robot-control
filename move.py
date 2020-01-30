@@ -1,9 +1,16 @@
 import ev3dev.ev3 as ev3
+import config
+from ev3dev2.sensor.lego import GyroSensor
+import math
+from time import sleep
+
 
 FWDLEFT = ev3.LargeMotor("outA")  # OutA means the motor connect to EV3 port A.
 FWDRIGHT = ev3.LargeMotor("outD")
 BWDLEFT = ev3.LargeMotor("outB")
 BWDRIGHT = ev3.LargeMotor("outC")
+gy = GyroSensor()
+gy.mode = "GYRO-ANG"
 
 
 def isMotorConnected():
@@ -55,19 +62,31 @@ def moveBackwardRight():
     return None
 
 
-def rotateAntiClockwise(angle):
-    angle /= 360
-    angle *= config.ROTATION_OFFSET
-    FWDLEFT.run_to_rel_pos(position_sp=angle, speed_sp=200)
-    FWDRIGHT.run_to_rel_pos(position_sp=-angle, speed_sp=200)
-    BWDLEFT.run_to_rel_pos(position_sp=-angle, speed_sp=200)
-    BWDRIGHT.run_to_rel_pos(position_sp=angle, speed_sp=200)
+def stop():
+    FWDLEFT.stop(stop_action="hold")
+    FWDRIGHT.stop(stop_action="hold")
+    BWDLEFT.stop(stop_action="hold")
+    BWDRIGHT.stop(stop_action="hold")
 
 
-def rotateClockwise(angle):
-    angle /= 360
-    angle *= config.ROTATION_OFFSET
-    FWDLEFT.run_to_rel_pos(position_sp=-angle, speed_sp=200)
-    FWDRIGHT.run_to_rel_pos(position_sp=angle, speed_sp=200)
-    BWDLEFT.run_to_rel_pos(position_sp=angle, speed_sp=200)
-    BWDRIGHT.run_to_rel_pos(position_sp=-angle, speed_sp=200)
+def rotateClockwise(angles):
+    c_angle = gy.angle
+    FWDLEFT.run_forever(speed_sp=200)
+    FWDRIGHT.run_forever(speed_sp=-200)
+    BWDLEFT.run_forever(speed_sp=-100)
+    BWDRIGHT.run_forever(speed_sp=100)
+    while abs(gy.angle - c_angle) < angles:
+        continue
+    stop()
+
+
+def rotateAntiClockwise(angles):
+    c_angle = gy.angle
+    FWDLEFT.run_forever(speed_sp=-200)
+    FWDRIGHT.run_forever(speed_sp=200)
+    BWDLEFT.run_forever(speed_sp=100)
+    BWDRIGHT.run_forever(speed_sp=-100)
+    while abs(gy.angle - c_angle) < angles:
+        sleep(0.01)
+        continue
+    stop()
