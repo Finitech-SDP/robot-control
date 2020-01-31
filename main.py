@@ -1,39 +1,42 @@
-#! /usr/bin/env python3
-
 import re
-import decode
-import move
+
+from control import decode
+from control import move
 
 
-if __name__ == "__main__":
-    # "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (\d*))|((RA|RC) (360|3[0-5][0-9]|[0-2]?[0-9]{1,2}))"
-    """Our command's format is
-    [direction speed(percentage of maximum rotate speed) duration(in ms)] or
-    [rotate_direction rotate angles]"""
-    command_re = "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (\d*))|((RA|RC) (\d*))"
-    begin_list = False
-    instuction_set = []
+def main():
+    command_pattern = "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (\d*))|((RA|RC) (\d*))"
+    begin_transaction = False
+    instructions = []
 
     while True:
-        if not move.isMotorConnected():
-            print("Motor is not well connected.")
+        if not move.is_motor_connected():
+            print("Motor is not connected properly")
             break
-        command = input(">")  # Fetch input command.
+
+        command = input(">")
+
         if command == "STOP":
             move.stop()
         if command == "BEGIN":
-            begin_list = True
+            begin_transaction = True
             continue
         if command == "END":
-            begin_list = False
-            decode.decode(instuction_set)
-            instuction_set.clear()
+            begin_transaction = False
+            decode.decode(instructions)
+            instructions.clear()
             continue
-        m = re.fullmatch(command_re, command)
-        if m is None:
-            print("Command is not in correct format!")
+
+        match = re.fullmatch(command_pattern, command)
+
+        if match is None:
+            print("Incorrect command format")
         else:
-            if begin_list:
-                instuction_set.append(m)
+            if begin_transaction:
+                instructions.append(match)
             else:
-                decode.decode([m])
+                decode.decode([match])
+
+
+if __name__ == "__main__":
+    main()

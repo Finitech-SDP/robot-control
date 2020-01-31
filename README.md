@@ -3,11 +3,11 @@
 ## Getting the code on EV3
 At the moment we do not have a sophisticated way of getting code onto the EV3 - have to use scp:
 ```bash
-scp main.py robot@<ip-address>:/home/robot
+scp -r robot-control robot@<ip-address>:/home/robot/robot-control
 ```
 > \<ip-address> is usually 192.168.105.4
 
-Run `./main.py` on EV3 for an interactive console
+Run `python main.py` on EV3 for an interactive command console
 
 ### Interactive Console Commands
 #### Direction identifiers

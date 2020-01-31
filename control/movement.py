@@ -1,73 +1,80 @@
-import ev3dev.ev3 as ev3
-import config
-from ev3dev2.sensor.lego import GyroSensor
-import math
 from time import sleep
 
+import ev3dev.ev3 as ev3
+from ev3dev2.sensor.lego import GyroSensor
 
 FWDLEFT = ev3.LargeMotor("outA")  # OutA means the motor connect to EV3 port A.
 FWDRIGHT = ev3.LargeMotor("outD")
 BWDLEFT = ev3.LargeMotor("outB")
 BWDRIGHT = ev3.LargeMotor("outC")
-gy = GyroSensor()
-gy.mode = "GYRO-ANG"
+
+GYRO = GyroSensor()
+GYRO.mode = "GYRO-ANG"
 
 
-def isMotorConnected():
-    if not (  # Check whether all the motor are connected.
+def wait_until_stationary():
+    FWDLEFT.wait_until_not_moving()
+    BWDLEFT.wait_until_not_moving()
+    FWDRIGHT.wait_until_not_moving()
+    BWDRIGHT.wait_until_not_moving()
+
+
+def is_motor_connected():
+    if (
         FWDLEFT.connected
         and FWDRIGHT.connected
         and BWDLEFT.connected
         and BWDRIGHT.connected
     ):
-        return False
-    return True
+        return True
+
+    return False
 
 
-def moveForward(speed, time):
+def move_forward(speed, time):
     FWDRIGHT.run_timed(speed_sp=speed, time_sp=time)
     FWDLEFT.run_timed(speed_sp=speed, time_sp=time)
     BWDLEFT.run_timed(speed_sp=-speed, time_sp=time)
     BWDRIGHT.run_timed(speed_sp=-speed, time_sp=time)
 
 
-def moveBackward(speed, time):
+def move_backward(speed, time):
     FWDRIGHT.run_timed(speed_sp=-speed, time_sp=time)
     FWDLEFT.run_timed(speed_sp=-speed, time_sp=time)
     BWDLEFT.run_timed(speed_sp=speed, time_sp=time)
     BWDRIGHT.run_timed(speed_sp=speed, time_sp=time)
 
 
-def moveLeft():
+def move_left():
     return None
 
 
-def moveRight():
+def move_right():
     return None
 
 
-def moveForwardLeft(speed, time):
+def move_forward_left(speed, time):
     FWDRIGHT.run_timed(speed_sp=speed / 2, time_sp=time)
     FWDLEFT.run_timed(speed_sp=speed, time_sp=time)
     BWDLEFT.run_timed(speed_sp=-speed, time_sp=time)
     BWDRIGHT.run_timed(speed_sp=-speed / 2, time_sp=time)
 
 
-def moveForwardRight(speed, time):
+def move_forward_right(speed, time):
     FWDRIGHT.run_timed(speed_sp=speed, time_sp=time)
     FWDLEFT.run_timed(speed_sp=speed / 2, time_sp=time)
     BWDLEFT.run_timed(speed_sp=-speed / 2, time_sp=time)
     BWDRIGHT.run_timed(speed_sp=-speed, time_sp=time)
 
 
-def moveBackwardLeft(speed, time):
+def move_backward_left(speed, time):
     FWDRIGHT.run_timed(speed_sp=-speed, time_sp=time)
     FWDLEFT.run_timed(speed_sp=-speed / 2, time_sp=time)
     BWDLEFT.run_timed(speed_sp=speed / 2, time_sp=time)
     BWDRIGHT.run_timed(speed_sp=speed, time_sp=time)
 
 
-def moveBackwardRight(speed, time):
+def move_backward_right(speed, time):
     FWDRIGHT.run_timed(speed_sp=-speed / 2, time_sp=time)
     FWDLEFT.run_timed(speed_sp=-speed, time_sp=time)
     BWDLEFT.run_timed(speed_sp=speed, time_sp=time)
@@ -81,24 +88,31 @@ def stop():
     BWDRIGHT.stop(stop_action="hold")
 
 
-def rotateClockwise(angles):
-    c_angle = gy.angle
+def rotate_clockwise(angle):
+    c_angle = GYRO.angle
+
     FWDLEFT.run_forever(speed_sp=200)
     FWDRIGHT.run_forever(speed_sp=-200)
     BWDLEFT.run_forever(speed_sp=-100)
     BWDRIGHT.run_forever(speed_sp=100)
-    while abs(gy.angle - c_angle) < angles:
+
+    while abs(GYRO.angle - c_angle) < angle:
+        sleep(0.01)
         continue
+
     stop()
 
 
-def rotateAntiClockwise(angles):
-    c_angle = gy.angle
+def rotate_anti_clockwise(angle):
+    c_angle = GYRO.angle
+
     FWDLEFT.run_forever(speed_sp=-200)
     FWDRIGHT.run_forever(speed_sp=200)
     BWDLEFT.run_forever(speed_sp=100)
     BWDRIGHT.run_forever(speed_sp=-100)
-    while abs(gy.angle - c_angle) < angles:
+
+    while abs(GYRO.angle - c_angle) < angle:
         sleep(0.01)
         continue
+
     stop()
