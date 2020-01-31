@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 import re
 
-from control import decode
-from control import move
+from control import decoder
+from control import movement
 
 
 def main():
@@ -11,20 +11,21 @@ def main():
     instructions = []
 
     while True:
-        if not move.is_motor_connected():
+        if not movement.is_motor_connected():
             print("Motor is not connected properly")
             break
 
         command = input(">")
 
         if command == "STOP":
-            move.stop()
+            movement.stop()
+            continue
         if command == "BEGIN":
             begin_transaction = True
             continue
         if command == "END":
             begin_transaction = False
-            decode.decode(instructions)
+            decoder.decode(instructions)
             instructions.clear()
             continue
 
@@ -36,7 +37,7 @@ def main():
             if begin_transaction:
                 instructions.append(match)
             else:
-                decode.decode([match])
+                decoder.decode([match])
 
 
 if __name__ == "__main__":
