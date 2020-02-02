@@ -30,14 +30,12 @@ def decode(instructions):
             speed /= 100
             speed *= 1050
 
-            if match.group(4) == "":
-                time = config.DEFAULT_RUNTIME_MS
-            else:
-                time = int(match.group(4))
+
+            time = match.group(4)
 
             direction = match.group(2)
             DIRECTIONS[direction](speed, time)
         else:
             direction = match.group(6)
-            angle = int(match.group(7))
+            angle = match.group(7)
             DIRECTIONS[direction](angle)

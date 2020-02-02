@@ -13,6 +13,7 @@ from time import sleep
 INSTRUCTIONS = []
 BEGIN_TRANSACTION = False
 
+
 def command_line():
     while True:
         if not movement.is_motor_connected():
@@ -21,21 +22,23 @@ def command_line():
         command = input(">")
         parse_command(command)
 
-        
+
 def parse_command(command):
     global BEGIN_TRANSACTION
     global INSTRUCTIONS
 
-    command_pattern = "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (\d*))|((RA|RC) (\d*))"
+    command_pattern = "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (-F|\d*))|((RA|RC) (-F|\d*))"
     if command == "STOP":
         movement.stop()
+        return None
     if command == "BEGIN":
         BEGIN_TRANSACTION = True
+        return None
     if command == "END":
         BEGIN_TRANSACTION = False
         decoder.decode(INSTRUCTIONS)
         INSTRUCTIONS.clear()
-
+        return None
     match = re.fullmatch(command_pattern, command)
 
     if match is None:
@@ -47,9 +50,9 @@ def parse_command(command):
             decoder.decode([match])
 
 
-# ./main.py server port
+# ./main.py server 
 def sock():
-    port = 4444
+    port = 4444 # default port is 4444
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         s.bind(("0.0.0.0", port))
@@ -60,7 +63,7 @@ def sock():
         s.close()
 
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-
+    print("connection success! ")
     while True:
         try:
             msg = protocol.receive_message(sock).decode("ascii")  # "F 100 1000"
@@ -75,13 +78,11 @@ def sock():
 
 
 def main():
-    if len(sys.argv)>1:
-        if sys.argv[1] == 'server':
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "server":
             sock()
     else:
         command_line()
-    
-    
 
 
 if __name__ == "__main__":
