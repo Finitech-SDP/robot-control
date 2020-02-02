@@ -15,10 +15,10 @@ GYRO.mode = "GYRO-ANG"
 
 
 def wait_until_stationary():
-    FWDLEFT.wait_until_not_moving(timeout=3000)
-    BWDLEFT.wait_until_not_moving(timeout=3000)
-    FWDRIGHT.wait_until_not_moving(timeout=3000)
-    BWDRIGHT.wait_until_not_moving(timeout=3000)
+    FWDLEFT.wait_until_not_moving(timeout=1250)
+    BWDLEFT.wait_until_not_moving(timeout=1250)
+    FWDRIGHT.wait_until_not_moving(timeout=1250)
+    BWDRIGHT.wait_until_not_moving(timeout=1250)
 
 
 def is_motor_connected():
@@ -116,6 +116,7 @@ def move_forward_right(speed, degree):
             continue
 
         stop()
+
 
 def move_backward_left(speed, degree):
     if degree == "":

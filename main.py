@@ -10,49 +10,18 @@ from protocol import protocol
 from time import sleep
 
 
-INSTRUCTIONS = []
-BEGIN_TRANSACTION = False
-
-
 def command_line():
     while True:
         if not movement.is_motor_connected():
             print("Motor is not connected properly")
             break
         command = input(">")
-        parse_command(command)
+        decoder.parse_command(command)
 
 
-def parse_command(command):
-    global BEGIN_TRANSACTION
-    global INSTRUCTIONS
-
-    command_pattern = "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (-F|\d*))|((RA|RC) (-F|\d*))"
-    if command == "STOP":
-        movement.stop()
-        return None
-    if command == "BEGIN":
-        BEGIN_TRANSACTION = True
-        return None
-    if command == "END":
-        BEGIN_TRANSACTION = False
-        decoder.decode(INSTRUCTIONS)
-        INSTRUCTIONS.clear()
-        return None
-    match = re.fullmatch(command_pattern, command)
-
-    if match is None:
-        print("Incorrect command format")
-    else:
-        if BEGIN_TRANSACTION:
-            INSTRUCTIONS.append(match)
-        else:
-            decoder.decode([match])
-
-
-# ./main.py server 
+# ./main.py server
 def sock():
-    port = 4444 # default port is 4444
+    port = 4444  # default port is 4444
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         s.bind(("0.0.0.0", port))
@@ -74,7 +43,7 @@ def sock():
             print("Motor is not connected properly")
             sleep(10)
 
-        parse_command(msg)
+        decoder.parse_command(msg)
 
 
 def main():

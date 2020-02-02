@@ -1,4 +1,5 @@
 import config
+import re
 from control import movement
 
 DIRECTIONS = {
@@ -13,6 +14,35 @@ DIRECTIONS = {
     "RA": movement.rotate_anti_clockwise,
     "RC": movement.rotate_clockwise,
 }
+INSTRUCTIONS = []
+BEGIN_TRANSACTION = False
+
+
+def parse_command(command):
+    global BEGIN_TRANSACTION
+    global INSTRUCTIONS
+
+    command_pattern = "((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (-F|\d*))|((RA|RC) (-F|\d*))"
+    if command == "STOP":
+        movement.stop()
+        return None
+    if command == "BEGIN":
+        BEGIN_TRANSACTION = True
+        return None
+    if command == "END":
+        BEGIN_TRANSACTION = False
+        decode(INSTRUCTIONS)
+        INSTRUCTIONS.clear()
+        return None
+    match = re.fullmatch(command_pattern, command)
+
+    if match is None:
+        print("Incorrect command format")
+    else:
+        if BEGIN_TRANSACTION:
+            INSTRUCTIONS.append(match)
+        else:
+            decode([match])
 
 
 def decode(instructions):
@@ -29,7 +59,6 @@ def decode(instructions):
 
             speed /= 100
             speed *= 1050
-
 
             time = match.group(4)
 
