@@ -1,13 +1,13 @@
 #! /usr/bin/env python3
-import re
-import sys
-import getopt
-import socket
 
+import socket
+import sys
+from time import sleep
+
+import config
 from control import decoder
 from control import movement
 from protocol import protocol
-from time import sleep
 
 
 def command_line():
@@ -19,12 +19,11 @@ def command_line():
         decoder.parse_command(command)
 
 
-# ./main.py server
-def sock():
-    port = 4444  # default port is 4444
+def tcp_server():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     try:
-        s.bind(("0.0.0.0", port))
+        s.bind(("0.0.0.0", config.TCP_PORT))
         s.listen(1)
         print("waiting for connections")
         sock = s.accept()[0]
@@ -32,7 +31,8 @@ def sock():
         s.close()
 
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-    print("connection success! ")
+    print("connection success!")
+
     while True:
         try:
             msg = protocol.receive_message(sock).decode("ascii")  # "F 100 1000"
@@ -49,7 +49,7 @@ def sock():
 def main():
     if len(sys.argv) > 1:
         if sys.argv[1] == "server":
-            sock()
+            tcp_server()
     else:
         command_line()
 
