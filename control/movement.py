@@ -18,19 +18,20 @@ def rotation_detect(angle):
     c_angle = GYRO.angle
     itreation = 0
     last_angle = 0
-    while abs(GYRO.angle - c_angle) < int(angle):
+    angle = int(angle)
+    while abs(GYRO.angle - c_angle) < angle:
         if last_angle == GYRO.angle:
             itreation += 1
         else:
             itreation = 0
 
         last_angle = GYRO.angle
-        if itreation == 10:
+        if itreation == 40:
             print("break")
             break
-        print(GYRO.angle - c_angle)
-        sleep(0.01)
+        sleep(0.005)
         continue
+    stop()   
 
 
 def wait_until_stationary():
@@ -107,7 +108,7 @@ def move_forward_left(speed, angle):
         BWDLEFT.run_forever(speed_sp=-speed)
         BWDRIGHT.run_forever(speed_sp=-speed / 2)
         rotation_detect(angle)
-        stop()
+
 
 
 def move_forward_right(speed, angle):
@@ -126,7 +127,7 @@ def move_forward_right(speed, angle):
         BWDLEFT.run_forever(speed_sp=-speed / 2)
         BWDRIGHT.run_forever(speed_sp=-speed)
         rotation_detect(angle)
-        stop()
+
 
 
 def move_backward_left(speed, angle):
@@ -144,7 +145,7 @@ def move_backward_left(speed, angle):
         BWDLEFT.run_forever(speed_sp=speed / 2)
         BWDRIGHT.run_forever(speed_sp=speed)
         rotation_detect(angle)
-        stop()
+
 
 
 def move_backward_right(speed, angle):
@@ -162,33 +163,33 @@ def move_backward_right(speed, angle):
         BWDLEFT.run_forever(speed_sp=speed)
         BWDRIGHT.run_forever(speed_sp=speed / 2)
         rotation_detect(angle)
-        stop()
+
 
 
 def stop():
-    FWDLEFT.stop(stop_action="brake")
-    FWDRIGHT.stop(stop_action="brake")
-    BWDLEFT.stop(stop_action="brake")
-    BWDRIGHT.stop(stop_action="brake")
+        FWDLEFT.stop(stop_action="brake")
+        FWDRIGHT.stop(stop_action="brake")
+        BWDLEFT.stop(stop_action="brake")
+        BWDRIGHT.stop(stop_action="brake")
 
 
-def rotate_clockwise(angle):
-    FWDLEFT.run_forever(speed_sp=200)
-    FWDRIGHT.run_forever(speed_sp=-200)
-    BWDLEFT.run_forever(speed_sp=-100)
-    BWDRIGHT.run_forever(speed_sp=100)
+def rotate_clockwise(speed,angle):
+    FWDLEFT.run_forever(speed_sp=speed)
+    FWDRIGHT.run_forever(speed_sp=-speed)
+    BWDLEFT.run_forever(speed_sp=-speed/2)
+    BWDRIGHT.run_forever(speed_sp=speed/2)
+    c_angle = GYRO.angle
+    if angle != "-F":
+        rotation_detect(angle)
+
+
+
+def rotate_anti_clockwise(speed,angle):
+    FWDLEFT.run_forever(speed_sp=-speed)
+    FWDRIGHT.run_forever(speed_sp=speed)
+    BWDLEFT.run_forever(speed_sp=speed/2)
+    BWDRIGHT.run_forever(speed_sp=-speed/2)
 
     if angle != "-F":
         rotation_detect(angle)
-        stop()
 
-
-def rotate_anti_clockwise(angle):
-    FWDLEFT.run_forever(speed_sp=-200)
-    FWDRIGHT.run_forever(speed_sp=200)
-    BWDLEFT.run_forever(speed_sp=100)
-    BWDRIGHT.run_forever(speed_sp=-100)
-
-    if angle != "-F":
-        rotation_detect(angle)
-        stop()

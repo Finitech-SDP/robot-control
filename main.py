@@ -53,16 +53,15 @@ def server():
                 clear_queue()
                 movement.stop()
             else:
-                print("Pushing message into the queue", msg)
                 message_queue.put_nowait(msg)
-                print("There are now", message_queue.qsize(), "in the queue")
         except BrokenPipeError:
             print("Peer closed the connection")
+            break
 
 
 def clear_queue():
     while not message_queue.empty():
-        print("Cleared", message_queue.get_nowait())
+        message_queue.get_nowait()
         message_queue.task_done()
 
 
@@ -70,7 +69,6 @@ def consumer():
     while True:
         try:
             msg = message_queue.get()
-            print("Consuming message from the queue", msg)
 
             decoder.parse_command(msg)
         except Exception as e:
