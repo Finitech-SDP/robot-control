@@ -8,7 +8,7 @@ scp -r robot-control robot@<ip-address>:/home/robot/robot-control
 > \<ip-address> is usually 192.168.105.4
 
 * Run `./main.py` on EV3 for an interactive command console
-* Run `./main.py server` on EV3 for server remote control!
+* Run `./main.py server` on EV3 for server remote control
 ### Interactive Console Commands
 #### Direction identifiers
 * F: Forward

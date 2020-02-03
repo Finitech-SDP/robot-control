@@ -1,94 +1,93 @@
 #! /usr/bin/env python3
 
+import logging
 import socket
-import traceback
-
-from threading import Thread
-from control import movement, decoder
 import sys
-from time import sleep
+import traceback
+from concurrent.futures import ThreadPoolExecutor
+from queue import Queue
 
 import config
+from control import decoder, movement
 from protocol import protocol
+from util import util
 
-from queue import Queue
-from concurrent.futures import ThreadPoolExecutor
+logging.basicConfig(level=config.LOGGING_LEVEL, format=config.LOGGING_FORMAT)
+
+MESSAGE_QUEUE = Queue(maxsize=config.CONTROL_QUEUE_SIZE)
 
 
-message_queue = Queue(maxsize=10)
-
-
-def command_line():
+def cli():
     while True:
-        if not movement.is_motor_connected():
-            print("Motor is not connected properly")
-            break
+        movement.exit_if_motors_not_connected()
 
         command = input(">")
-        message_queue.put_nowait(command)
+
+        if command == "STOP":  # Kill-switch
+            clear_queue()
+            movement.stop()
+        else:
+            MESSAGE_QUEUE.put_nowait(command)
 
 
 def server():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((config.TCP_HOST, config.TCP_PORT))
+        s.listen(backlog=1)
+        logging.info(
+            f"Listening on {util.get_ip()}:{config.TCP_PORT}, use ctrl+c to stop"
+        )
+        sock, addr = s.accept()
 
-    try:
-        s.bind(("0.0.0.0", config.TCP_PORT))
-        s.listen(1)
-        print("waiting for connections")
-        sock = s.accept()[0]
-    finally:
-        s.close()
+        # TODO: why is this needed?
+        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        with sock:
+            while True:
+                movement.exit_if_motors_not_connected()
 
-    print("connection success!")
+                try:
+                    msg = protocol.receive_message(sock).decode("ascii")
 
-    while True:
-        while not movement.is_motor_connected():
-            print("Motor is not connected properly")
-            sleep(10)
-
-        try:
-            msg = protocol.receive_message(sock).decode("ascii")  # "F 100 1000"
-
-            if msg == "STOP":  # Urgent stop
-                clear_queue()
-                movement.stop()
-            else:
-                message_queue.put_nowait(msg)
-        except BrokenPipeError:
-            print("Peer closed the connection")
-            break
+                    if msg == "STOP":  # Kill-switch
+                        clear_queue()
+                        movement.stop()
+                    else:
+                        MESSAGE_QUEUE.put_nowait(msg)
+                except BrokenPipeError:
+                    print("Peer closed the connection")
+                    break
 
 
 def clear_queue():
-    while not message_queue.empty():
-        message_queue.get_nowait()
-        message_queue.task_done()
+    while not MESSAGE_QUEUE.empty():
+        MESSAGE_QUEUE.get_nowait()
+        MESSAGE_QUEUE.task_done()
 
 
 def consumer():
     while True:
         try:
-            msg = message_queue.get()
+            msg = MESSAGE_QUEUE.get()
 
             decoder.parse_command(msg)
         except Exception as e:
-            print("Crashed and burnder", str(e))
+            logging.error("Consumer error: %s", str(e))
             traceback.print_exc()
         finally:
-            message_queue.task_done()
+            MESSAGE_QUEUE.task_done()
 
 
 def main():
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "server":
-            producer = server
+    if len(sys.argv) > 1 and sys.argv[1] == "server":
+        producer = server
     else:
-        producer = command_line
+        producer = cli
 
+    # TODO: handle keyboard interrupts
     with ThreadPoolExecutor(2) as executor:
-        [executor.submit(producer), executor.submit(consumer)]
+        executor.submit(producer)
+        executor.submit(consumer)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
-import config
 import re
+
+import config
 from control import movement
-import time as T
 
 DIRECTIONS = {
     "F": movement.move_forward,
@@ -19,7 +19,7 @@ DIRECTIONS = {
 
 def parse_command(command):
     command_pattern = "((FR|FL|BL|BR|RA|RC|[FBRL]) (100|\d?\d)? (-F|\d*))"
-        #"((FR|FL|BL|BR|[FBRL]) (100|\d?\d)? (-F|\d*))|((RA|RC) (-F|\d*))"
+
     if command == "STOP":
         movement.stop()
         return
@@ -33,9 +33,8 @@ def parse_command(command):
 
 
 def decode(match):
-    """ :param instructions is a list of command regex matches """
-    print(T.time())
     movement.wait_until_stationary()
+
     if match.group(3) is None:
         speed = config.DEFAULT_SPEED_PERCENT
     else:
@@ -48,4 +47,3 @@ def decode(match):
 
     direction = match.group(2)
     DIRECTIONS[direction](speed, time)
-
