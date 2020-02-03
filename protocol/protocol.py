@@ -6,6 +6,7 @@ def send_message(sock: socket.socket, message: bytearray) -> None:
         b"%s%s%s" % (b"\x01", len(message).to_bytes(4, byteorder="big"), message)
     )
 
+
 def receive_message(sock: socket.socket) -> bytearray:
     type_header = recv_all(sock, 1)
     length_header = recv_all(sock, 4)

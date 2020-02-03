@@ -1,14 +1,15 @@
 #! /usr/bin/env python3
-import re
-import sys
-import getopt
+
 import socket
 import traceback
 
 from threading import Thread
 from control import movement, decoder
-from protocol import protocol
+import sys
 from time import sleep
+
+import config
+from protocol import protocol
 
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
@@ -28,10 +29,10 @@ def command_line():
 
 
 def server():
-    port = 4444  # default port is 4444
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     try:
-        s.bind(("0.0.0.0", port))
+        s.bind(("0.0.0.0", config.TCP_PORT))
         s.listen(1)
         print("waiting for connections")
         sock = s.accept()[0]
@@ -39,7 +40,8 @@ def server():
         s.close()
 
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-    print("connection success! ")
+
+    print("connection success!")
 
     while True:
         while not movement.is_motor_connected():
