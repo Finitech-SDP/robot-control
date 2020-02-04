@@ -31,33 +31,37 @@ def cli():
 
 
 def server():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((config.TCP_HOST, config.TCP_PORT))
-        s.listen(backlog=1)
-        logging.info(
-            "Listening on %s:%d, use ctrl+c to stop",
-            util.get_ip(),
-            config.TCP_PORT
-        )
-        sock, addr = s.accept()
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind((config.TCP_HOST, config.TCP_PORT))
+            s.listen(backlog=1)
+            logging.info(
+                "Listening on %s:%d, use ctrl+c to stop",
+                util.get_ip(),
+                config.TCP_PORT
+            )
+            sock, addr = s.accept()
 
-        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-        with sock:
-            while True:
-                movement.exit_if_motors_not_connected()
+            with sock:
+                while True:
+                    movement.exit_if_motors_not_connected()
 
-                try:
-                    msg = protocol.receive_message(sock).decode("ascii")
+                    try:
+                        msg = protocol.receive_message(sock).decode("ascii")
 
-                    if msg == "STOP":  # Kill-switch
-                        clear_queue()
-                        movement.stop()
-                    else:
-                        MESSAGE_QUEUE.put_nowait(msg)
-                except BrokenPipeError:
-                    print("Peer closed the connection")
-                    break
+                        if msg == "STOP":  # Kill-switch
+                            clear_queue()
+                            movement.stop()
+                        else:
+                            MESSAGE_QUEUE.put_nowait(msg)
+                    except BrokenPipeError:
+                        print("Peer closed the connection")
+                        break
+    except Exception:
+        print("SERVER ERROR")
+        traceback.print_exc()
 
 
 def clear_queue():
