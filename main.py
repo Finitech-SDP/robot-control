@@ -37,7 +37,7 @@ def server():
             s.listen(backlog=1)
             logging.info(
                 "Listening on %s:%d, use ctrl+c to stop",
-                util.get_ip(),
+                config.TCP_HOST,
                 config.TCP_PORT
             )
             sock, addr = s.accept()
