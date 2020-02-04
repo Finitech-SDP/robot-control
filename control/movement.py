@@ -30,7 +30,7 @@ def stop_when_rotation_complete(angle):
             iteration = 0
 
         last_angle = GYRO.angle
-        if iteration == 40:
+        if iteration == 50:
             break
 
         sleep(0.005)
@@ -185,8 +185,8 @@ def stop():
 def rotate_clockwise(speed, angle):
     FWDLEFT.run_forever(speed_sp=speed)
     FWDRIGHT.run_forever(speed_sp=-speed)
-    BWDLEFT.run_forever(speed_sp=-speed / 2)
-    BWDRIGHT.run_forever(speed_sp=speed / 2)
+    BWDLEFT.run_forever(speed_sp=-speed)
+    BWDRIGHT.run_forever(speed_sp=speed)
 
     if angle != "-F":
         stop_when_rotation_complete(angle)
@@ -195,8 +195,8 @@ def rotate_clockwise(speed, angle):
 def rotate_anti_clockwise(speed, angle):
     FWDLEFT.run_forever(speed_sp=-speed)
     FWDRIGHT.run_forever(speed_sp=speed)
-    BWDLEFT.run_forever(speed_sp=speed / 2)
-    BWDRIGHT.run_forever(speed_sp=-speed / 2)
+    BWDLEFT.run_forever(speed_sp=speed)
+    BWDRIGHT.run_forever(speed_sp=-speed)
 
     if angle != "-F":
         stop_when_rotation_complete(angle)
