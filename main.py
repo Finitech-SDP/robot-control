@@ -33,7 +33,7 @@ def server():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((config.TCP_HOST, config.TCP_PORT))
-            s.listen(backlog=1)
+            s.listen(1)
             logging.info(
                 "Listening on %s:%d, use ctrl+c to stop",
                 config.TCP_HOST,
