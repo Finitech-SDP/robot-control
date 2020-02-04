@@ -23,18 +23,9 @@ scp -r robot-control robot@<ip-address>:/home/robot/robot-control
 * RA: Rotate anti clockwise
 * RC: Rotate clockwise
 #### Command format
-`> [direction|rotation] [speed|angle] [time]`
+`> [direction|rotation] [power] [time|angle]`
 
-* speed in range 0-100, where 100 means it reaches EV3 motor's maximum rotate speed, 1050 degrees per second.
+* power in range 0-100, where 100 means it reaches EV3 motor's maximum rotate speed, 1050 degrees per second.
 * time is in milliseconds.
 * rotation angle should be within 360 degrees.
 
-#### Transaction support:
-You can specify multiple instructions to be executed at once with this syntax:
-
-```
-> BEGIN
-> Instruction1
-> Instruction2
-> END
-```
