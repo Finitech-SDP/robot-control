@@ -10,7 +10,6 @@ from queue import Queue
 import config
 from control import decoder, movement
 from protocol import protocol
-from util import util
 
 logging.basicConfig(level=config.LOGGING_LEVEL, format=config.LOGGING_FORMAT)
 
@@ -38,10 +37,11 @@ def server():
             logging.info(
                 "Listening on %s:%d, use ctrl+c to stop",
                 config.TCP_HOST,
-                config.TCP_PORT
+                config.TCP_PORT,
             )
             sock, addr = s.accept()
 
+            # Disable TCP buffering
             sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
             with sock:
@@ -59,8 +59,8 @@ def server():
                     except BrokenPipeError:
                         print("Peer closed the connection")
                         break
-    except Exception:
-        print("SERVER ERROR")
+    except Exception as e:
+        logging.error("Server error: %s", str(e))
         traceback.print_exc()
 
 
