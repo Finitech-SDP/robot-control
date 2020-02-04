@@ -35,11 +35,12 @@ def server():
         s.bind((config.TCP_HOST, config.TCP_PORT))
         s.listen(backlog=1)
         logging.info(
-            f"Listening on {util.get_ip()}:{config.TCP_PORT}, use ctrl+c to stop"
+            "Listening on %s:%d, use ctrl+c to stop",
+            util.get_ip(),
+            config.TCP_PORT
         )
         sock, addr = s.accept()
 
-        # TODO: why is this needed?
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
         with sock:
