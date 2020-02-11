@@ -13,12 +13,12 @@ from util import util
 #BWDLEFT = ev3.LargeMotor("outB")
 #BWDRIGHT = ev3.LargeMotor("outC")
 '''Motor_id represented'''
-FWDLEFT = 0
+FWDLEFT = 4
 FWDRIGHT = 1
 BWDLEFT = 2
 BWDRIGHT = 3
 mc = Motors()
-
+TIME = time()
 
 #GYRO = GyroSensor()
 #GYRO.mode = "GYRO-ANG"
@@ -54,11 +54,15 @@ def is_motor_connected():
         and BWDLEFT.connected
         and BWDRIGHT.connected
     )"""
+def setTime (t):
+    global TIME
+    TIME = float(t)
+
 
 def stop_when_time_reach(t):
+    setTime(t)
     curr_time = time()
-    t = float(t)
-    while time()<curr_time+t:
+    while time()<curr_time+TIME:
         sleep(0.01)
     mc.stop_motors()
 

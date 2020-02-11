@@ -14,16 +14,15 @@ from motors import Motors
 MC = Motors()
 MESSAGE_QUEUE = Queue(maxsize=config.CONTROL_QUEUE_SIZE)
 
-
+ 
 def cli():
     while True:
 
         command = raw_input(">")
 
         if command == "STOP":  # Kill-switch
+            movement.setTime(0)
             clear_queue()
-            movement.stop()
-            
         else:
             MESSAGE_QUEUE.put_nowait(command)
 
