@@ -7,7 +7,7 @@ from threading import Thread
 
 import config
 from control import decoder, movement
-#from protocol import protocol
+from protocol import protocol
 from motors import Motors
 
 
@@ -28,7 +28,7 @@ def cli():
             MESSAGE_QUEUE.put_nowait(command)
 
 
-'''def server():
+def server():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((config.TCP_HOST, config.TCP_PORT))
@@ -59,7 +59,7 @@ def cli():
                         break
     except Exception as e:
         logging.error("Server error: %s", str(e))
-        traceback.print_exc()'''
+        traceback.print_exc()
 
 
 def consumer():
