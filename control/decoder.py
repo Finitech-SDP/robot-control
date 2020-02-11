@@ -16,6 +16,9 @@ DIRECTIONS = {
     "RC": movement.rotate_clockwise,
 }
 
+def fullmatch(regex, string, flags=0):
+    """Emulate python-3.4 re.fullmatch()."""
+    return re.match("(?:" + regex + r")\Z", string, flags=flags)
 
 def parse_command(command):
     command_pattern = "((FR|FL|BL|BR|RA|RC|[FBRL]) (100|\d?\d)? (-F|\d*))"
@@ -24,7 +27,7 @@ def parse_command(command):
         movement.stop()
         return
 
-    match = re.fullmatch(command_pattern, command)
+    match = fullmatch(command_pattern, command)
 
     if match is None:
         print("Incorrect command format")
@@ -33,7 +36,7 @@ def parse_command(command):
 
 
 def decode(match):
-    movement.wait_until_stationary()
+    #movement.wait_until_stationary()
 
     if match.group(3) is None:
         speed = config.DEFAULT_SPEED_PERCENT

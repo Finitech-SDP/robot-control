@@ -1,35 +1,34 @@
-#! /usr/bin/env python3
-
 import logging
 import socket
 import sys
 import traceback
-from concurrent.futures import ThreadPoolExecutor
-from queue import Queue
+from Queue import Queue
+from threading import Thread
 
 import config
 from control import decoder, movement
-from protocol import protocol
+#from protocol import protocol
+from motors import Motors
 
-logging.basicConfig(level=config.LOGGING_LEVEL, format=config.LOGGING_FORMAT)
 
+MC = Motors()
 MESSAGE_QUEUE = Queue(maxsize=config.CONTROL_QUEUE_SIZE)
 
 
 def cli():
     while True:
-        movement.exit_if_motors_not_connected()
 
-        command = input(">")
+        command = raw_input(">")
 
         if command == "STOP":  # Kill-switch
             clear_queue()
             movement.stop()
+            
         else:
             MESSAGE_QUEUE.put_nowait(command)
 
 
-def server():
+'''def server():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((config.TCP_HOST, config.TCP_PORT))
@@ -46,14 +45,13 @@ def server():
 
             with sock:
                 while True:
-                    movement.exit_if_motors_not_connected()
+                    #movement.exit_if_motors_not_connected()
 
                     try:
                         msg = protocol.receive_message(sock).decode("ascii")
 
                         if msg == "STOP":  # Kill-switch
-                            clear_queue()
-                            movement.stop()
+                            MC.stop_motors()
                         else:
                             MESSAGE_QUEUE.put_nowait(msg)
                     except BrokenPipeError:
@@ -61,20 +59,13 @@ def server():
                         break
     except Exception as e:
         logging.error("Server error: %s", str(e))
-        traceback.print_exc()
-
-
-def clear_queue():
-    while not MESSAGE_QUEUE.empty():
-        MESSAGE_QUEUE.get_nowait()
-        MESSAGE_QUEUE.task_done()
+        traceback.print_exc()'''
 
 
 def consumer():
     while True:
         try:
             msg = MESSAGE_QUEUE.get()
-
             decoder.parse_command(msg)
         except Exception as e:
             logging.error("Consumer error: %s", str(e))
@@ -83,16 +74,29 @@ def consumer():
             MESSAGE_QUEUE.task_done()
 
 
-def main():
-    if len(sys.argv) > 1 and sys.argv[1] == "server":
-        producer = server
-    else:
-        producer = cli
+def clear_queue():
+    while not MESSAGE_QUEUE.empty():
+        MESSAGE_QUEUE.get_nowait()
+        MESSAGE_QUEUE.task_done()
 
+def main():
+    '''if len(sys.argv) > 1 and sys.argv[1] == "server":
+        producer = server
+    else:'''
+    producer = cli
+
+    producer_thread = Thread(target=producer)
+    consumer_thread = Thread(target=consumer)
+    try:
+        producer_thread.start()
+        consumer_thread.start()
+        producer_thread.join()
+        consumer_thread.setDaemon(True)
+    except (KeyboardInterrupt,SystemExit):
+        print("exit")
     # TODO: handle keyboard interrupts
-    with ThreadPoolExecutor(2) as executor:
-        executor.submit(producer)
-        executor.submit(consumer)
+    
+
 
 
 if __name__ == "__main__":
