@@ -15,8 +15,8 @@ from util import util
 '''Motor_id represented'''
 FRONT = 4
 BACK = 1
-LEFT = 2
-RIGHT = 3
+SH = 2
+FH = 3
 mc = Motors()
 TIME = time()
 
@@ -110,24 +110,24 @@ def move_left(speed, time):
     if time == "":
         time = config.DEFAULT_RUNTIME_MS
     if time == "-F":
-        mc.move_motor(LEFT,speed)
-        mc.move_motor(RIGHT,-speed)  
+        mc.move_motor(SH,speed)
+        mc.move_motor(FH,-speed)  
     else:
         time = int(time)
-        mc.move_motor(RIGHT,-speed)
-        mc.move_motor(LEFT,speed) 
+        mc.move_motor(SH,speed)
+        mc.move_motor(FH,-speed)
         stop_when_time_reach(time)
 
 def move_right(speed, time):
     if time == "":
         time = config.DEFAULT_RUNTIME_MS
     if time == "-F":
-        mc.move_motor(LEFT,-speed)
-        mc.move_motor(RIGHT,speed) 
+        mc.move_motor(SH,-speed)
+        mc.move_motor(FH,speed) 
     else:
         time = int(time)
-        mc.move_motor(LEFT,-speed)
-        mc.move_motor(RIGHT,speed) 
+        mc.move_motor(SH,-speed)
+        mc.move_motor(FH,speed) 
         stop_when_time_reach(time)
 
 def move_forward_left(speed, time):
@@ -135,14 +135,14 @@ def move_forward_left(speed, time):
         time = config.DEFAULT_RUNTIME_MS
     if time == "-F":
         mc.read_encoder()
-        mc.move_motor(RIGHT,speed)
-        mc.move_motor(LEFT,-speed) 
+        mc.move_motor(FH,-speed)
+        mc.move_motor(SH,speed) 
         mc.move_motor(FRONT,speed)
         mc.move_motor(BACK,-speed)
     else:
         time = int(time)
-        mc.move_motor(RIGHT,speed)
-        mc.move_motor(LEFT,-speed) 
+        mc.move_motor(FH,-speed)
+        mc.move_motor(SH,speed) 
         mc.move_motor(FRONT,speed)
         mc.move_motor(BACK,-speed)
         stop_when_time_reach(time)
@@ -154,14 +154,14 @@ def move_forward_right(speed, time):
     if time == "-F":
         mc.move_motor(FRONT,speed)
         mc.move_motor(BACK,-speed) 
-        mc.move_motor(LEFT,-speed)
-        mc.move_motor(RIGHT,speed)
+        mc.move_motor(SH,-speed)
+        mc.move_motor(FH,speed)
     else:
         time = int(time)
         mc.move_motor(FRONT,speed)
         mc.move_motor(BACK,-speed) 
-        mc.move_motor(LEFT,-speed)
-        mc.move_motor(RIGHT,speed)
+        mc.move_motor(SH,-speed)
+        mc.move_motor(FH,speed)
         stop_when_time_reach(time)
 
 
@@ -171,14 +171,14 @@ def move_backward_left(speed, time):
     if time == "-F":
         mc.move_motor(FRONT,-speed)
         mc.move_motor(BACK,speed) 
-        mc.move_motor(LEFT,speed)
-        mc.move_motor(RIGHT,-speed)
+        mc.move_motor(SH,speed)
+        mc.move_motor(FH,-speed)
     else:
         time = int(time)
         mc.move_motor(FRONT,-speed)
         mc.move_motor(BACK,speed) 
-        mc.move_motor(LEFT,speed)
-        mc.move_motor(RIGHT,-speed)
+        mc.move_motor(SH,speed)
+        mc.move_motor(FH,-speed)
         stop_when_time_reach(time)
 
 
@@ -188,21 +188,21 @@ def move_backward_right(speed, time):
         if time == "-F":
             mc.move_motor(FRONT,-speed)
             mc.move_motor(BACK,speed) 
-            mc.move_motor(LEFT,-speed)
-            mc.move_motor(RIGHT,speed)
+            mc.move_motor(SH,-speed)
+            mc.move_motor(FH,speed)
     else:
         time = int(time)
         mc.move_motor(FRONT,-speed)
         mc.move_motor(BACK,speed) 
-        mc.move_motor(LEFT,-speed)
-        mc.move_motor(RIGHT,speed)
+        mc.move_motor(SH,-speed)
+        mc.move_motor(FH,speed)
         stop_when_time_reach(time)
 
 
 
 def rotate_clockwise(speed,angle):
-    mc.move_motor(RIGHT,-speed)
-    mc.move_motor(LEFT,-speed)  
+    mc.move_motor(FH,speed)
+    mc.move_motor(SH,speed)  
     stop_when_time_reach(20)
 """" if angle == "":
         time = config.DEFAULT_RUNTIME_ANGLE
@@ -235,6 +235,6 @@ def rotate_anti_clockwise(speed, angle):
     #     mc.move_motor(FWDLEFT,-speed)
     #     mc.move_motor(BWDRIGHT,-speed) 
     #     stop_when_time_reach(time)
-    mc.move_motor(RIGHT,speed)
-    mc.move_motor(LEFT,-speed)  
+    mc.move_motor(FH,-speed)
+    mc.move_motor(SH,-speed)  
     stop_when_time_reach(20)
