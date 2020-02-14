@@ -29,36 +29,39 @@ def cli():
 
 def server():
     try:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((config.TCP_HOST, config.TCP_PORT))
-            s.listen(1)
-            logging.info(
-                "Listening on %s:%d, use ctrl+c to stop",
-                config.TCP_HOST,
-                config.TCP_PORT,
-            )
-            sock, addr = s.accept()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((config.TCP_HOST, config.TCP_PORT))
+        print("bind success")
+        s.listen(1)
+        print("waiting for connection")
+        logging.info(
+            "Listening on %s:%d, use ctrl+c to stop",
+            config.TCP_HOST,
+            config.TCP_PORT,
+        )
+        sock, addr = s.accept()
+        # Disable TCP buffering
+        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        while True:
+            #movement.exit_if_motors_not_connected()
 
-            # Disable TCP buffering
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+            try:
+                msg = protocol.receive_message(sock).decode("ascii")
 
-            with sock:
-                while True:
-                    #movement.exit_if_motors_not_connected()
+                if msg == "STOP":  # Kill-switch
+                    MC.stop_motors()
+                else:
+                    MESSAGE_QUEUE.put_nowait(msg)
+            except:
+                print("Peer closed the connection")
+                break
+        sock.close()
 
-                    try:
-                        msg = protocol.receive_message(sock).decode("ascii")
-
-                        if msg == "STOP":  # Kill-switch
-                            MC.stop_motors()
-                        else:
-                            MESSAGE_QUEUE.put_nowait(msg)
-                    except BrokenPipeError:
-                        print("Peer closed the connection")
-                        break
     except Exception as e:
         logging.error("Server error: %s", str(e))
         traceback.print_exc()
+    finally:
+        s.close()
 
 
 def consumer():
@@ -79,10 +82,11 @@ def clear_queue():
         MESSAGE_QUEUE.task_done()
 
 def main():
-    '''if len(sys.argv) > 1 and sys.argv[1] == "server":
+    if len(sys.argv) > 1 and sys.argv[1] == "server":
         producer = server
-    else:'''
-    producer = cli
+        print("server mode")
+    else:
+        producer = cli
 
     producer_thread = Thread(target=producer)
     consumer_thread = Thread(target=consumer)

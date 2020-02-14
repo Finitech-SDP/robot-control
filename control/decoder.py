@@ -15,7 +15,7 @@ DIRECTIONS = {
     "RA": movement.rotate_anti_clockwise,
     "RC": movement.rotate_clockwise,
 }
-command_pattern = "((FR|FL|BL|BR|RA|RC|[FBRL]) (100|\d?\d)? (-F|\d*)?)"
+command_pattern = "((FR|FL|BL|BR|RA|RC|[FBRL]) (\d?|\d?\d)? (-F|\d*)?)"
 prog = re.compile(command_pattern)
 
 def parse_command(command):
@@ -23,7 +23,12 @@ def parse_command(command):
     if command == "STOP":
         movement.stop()
         return
-
+    if command == "catch":
+        movement.catch()
+        return
+    if command == "release":
+        movement.release()
+        return
     match = prog.match(command)
 
     if match is None:

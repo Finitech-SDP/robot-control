@@ -19,7 +19,7 @@ SH = 2
 FH = 3
 mc = Motors()
 TIME = time()
-
+iscatch = False
 #GYRO = GyroSensor()
 #GYRO.mode = "GYRO-ANG"
 
@@ -181,6 +181,19 @@ def move_backward_left(speed, time):
         mc.move_motor(FH,-speed)
         stop_when_time_reach(time)
 
+def catch():
+    global iscatch
+    if not iscatch:
+        mc.move_motor(5,-80)
+        stop_when_time_reach(0.1)
+        iscatch = True
+
+def release():
+    global iscatch
+    if iscatch:
+        mc.move_motor(5,80)
+        stop_when_time_reach(0.1)
+        iscatch = False
 
 def move_backward_right(speed, time):
     if time == "":
