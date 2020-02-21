@@ -20,7 +20,7 @@ DIRECTIONS = {
     "RC": movement.rotate_clockwise,
 }
 
-command_pattern = "(FR|FL|BL|BR|RA|RC|[FBRL]) (\d?\d?\d)? (-F|\d*)?"
+command_pattern = "(FR|FL|BL|BR|RA|RC|[FBRL]) (\d?\d?\d)? (-F|\d*.?\d*)?"
 prog = re.compile(command_pattern)
 
 def parse_command(command):
@@ -45,8 +45,10 @@ def redo():
     if direction != "":
         if time=="-F" :
             DIRECTIONS[direction](speed,'-F')
+        if time == "":
+            pass
         else :
-            t0 = time - movement.time_pass
+            t0 = float(time) - movement.time_pass
             DIRECTIONS[direction](speed,t0)
 
 def decode(match):
@@ -61,5 +63,6 @@ def decode(match):
         speed = int(match.group(2))
     
     time = match.group(3)
+    print (time)
     direction = match.group(1)
     DIRECTIONS[direction](speed, time)

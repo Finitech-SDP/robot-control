@@ -78,10 +78,10 @@ def server():
 def sonicsensor():
     while True:
         sleep(0.10)
-        if sonic.get_distance()<5:
+        if sonic.get_distance()<10:
             stop_command()
             print(sonic.get_distance())
-            while(sonic.get_distance()<10):
+            while(sonic.get_distance()<20):
                 continue
             decoder.redo()
 
@@ -121,7 +121,6 @@ def main():
         consumer_thread.start()
         sonic_thread.start()
         producer_thread.join()
-        sonic_thread.join()
     except (KeyboardInterrupt,SystemExit):
         print("exit")
     # TODO: handle keyboard interrupts
