@@ -7,6 +7,7 @@ from time import sleep, time
 from motors import Motors
 import config
 from util import util
+import decoder
 
 #FWDLEFT = ev3.LargeMotor("outA")  # outA means the motor connect to EV3 port A.
 #FWDRIGHT = ev3.LargeMotor("outD")
@@ -68,6 +69,7 @@ def stop_when_time_reach(t):
         time_pass = time() - curr_time
         sleep(0.01)
     mc.stop_motors()
+    decoder.is_moving = False
 
 
   
@@ -77,6 +79,8 @@ def stop_when_time_reach(t):
         sys.exit(1)"""
 def stop():
     mc.stop_motors()
+    decoder.is_moving = False
+
 
 """def wait_until_stationary():
     FWDLEFT.wait_until_not_moving(timeout=1250)
@@ -111,7 +115,7 @@ def move_forward(speed, time):
 
 def move_left(speed, time):
     if time == "":
-        time = config.DEFAULT_RUNTIME_S
+        time = config.DEFAULT_SIDE_RUNTIME_S
     if time == "-F":
         mc.move_motor(SH,speed)
         mc.move_motor(FH,-speed)  
@@ -123,7 +127,7 @@ def move_left(speed, time):
 
 def move_right(speed, time):
     if time == "":
-        time = config.DEFAULT_RUNTIME_S
+        time = config.DEFAULT_SIDE_RUNTIME_S
     if time == "-F":
         mc.move_motor(SH,-speed)
         mc.move_motor(FH,speed) 

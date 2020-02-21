@@ -16,7 +16,6 @@ MC = Motors()
 MESSAGE_QUEUE = Queue(maxsize=config.CONTROL_QUEUE_SIZE)
 sonic = GroveUltrasonicRanger(5)
 
-
 def stop_command():
     movement.setTime(0)
     movement.stop()
@@ -76,14 +75,18 @@ def server():
 
 
 def sonicsensor():
-    while True:
-        sleep(0.10)
-        if sonic.get_distance()<10:
-            stop_command()
-            print(sonic.get_distance())
-            while(sonic.get_distance()<20):
-                continue
-            decoder.redo()
+        while True:
+            sleep(0.10)
+            if(decoder.is_moving) :
+                if sonic.get_distance()<10:
+                    stop_command()
+                    print(sonic.get_distance())
+                    while(sonic.get_distance()<20):
+                        continue
+                    if decoder.time!="-F" and decoder.time!="":
+                        decoder.time = float(decoder.time) - movement.time_pass
+                    g = "{0} {1} {2}".format(decoder.direction,decoder.speed,decoder.time)
+                    MESSAGE_QUEUE.put_nowait(g)
 
             
 def consumer():
