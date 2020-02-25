@@ -77,3 +77,4 @@ def decode(match):
     direction = match.group(1)
     is_moving =True
     DIRECTIONS[direction](speed, time)
+    

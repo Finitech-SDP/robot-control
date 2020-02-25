@@ -15,6 +15,7 @@ import config
 MC = Motors()
 MESSAGE_QUEUE = Queue(maxsize=config.CONTROL_QUEUE_SIZE)
 sonic = GroveUltrasonicRanger(5)
+KEEPMOVING = True
 
 def stop_command():
     movement.setTime(0)
@@ -22,6 +23,7 @@ def stop_command():
 
 
 def cli():
+    global KEEPMOVING
     while True:
 
         command = raw_input(">")
@@ -29,11 +31,13 @@ def cli():
         if command == "STOP":  # Kill-switch
             stop_command()
             clear_queue()
+            KEEPMOVING = False
         else:
             MESSAGE_QUEUE.put_nowait(command)
-
+            KEEPMOVING = True
 
 def server():
+    global KEEPMOVING
     try:
         port = sys.argv[2] if sys.argv[2]!=None else config.TCP_PORT
         port = int(port)
@@ -59,9 +63,10 @@ def server():
                 if msg == "STOP":  # Kill-switch
                     stop_command()
                     clear_queue()
-
+                    KEEPMOVING = False
                 else:
                     MESSAGE_QUEUE.put_nowait(msg)
+                    KEEPMOVING = True
             except:
                 print("Peer closed the connection")
                 break
@@ -77,16 +82,21 @@ def server():
 def sonicsensor():
         while True:
             sleep(0.10)
-            if(decoder.is_moving) :
-                if sonic.get_distance()<10:
+            if (decoder.is_moving and 
+                (decoder.direction=="F" 
+                    or decoder.direction=="FR" 
+                    or decoder.direction =="FL")) :
+                if sonic.get_distance()<20:
                     stop_command()
-                    print(sonic.get_distance())
-                    while(sonic.get_distance()<20):
+                    print("obstacle detected! %d" % sonic.get_distance())
+                    while(sonic.get_distance()<40):
                         continue
                     if decoder.time!="-F" and decoder.time!="":
                         decoder.time = float(decoder.time) - movement.time_pass
                     g = "{0} {1} {2}".format(decoder.direction,decoder.speed,decoder.time)
-                    MESSAGE_QUEUE.put_nowait(g)
+                    print("Time left %s" % decoder.time)
+                    if KEEPMOVING:
+                        MESSAGE_QUEUE.put(g)
 
             
 def consumer():

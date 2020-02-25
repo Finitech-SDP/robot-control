@@ -9,65 +9,33 @@ import config
 from util import util
 import decoder
 
-#FWDLEFT = ev3.LargeMotor("outA")  # outA means the motor connect to EV3 port A.
-#FWDRIGHT = ev3.LargeMotor("outD")
-#BWDLEFT = ev3.LargeMotor("outB")
-#BWDRIGHT = ev3.LargeMotor("outC")
 '''Motor_id represented'''
 SH = 2
 FH = 3
+Left = 1
+Right = 4 #postive speed means going backward
 mc = Motors()
 TIME = time()
 time_pass = 0
 iscatch = False
-Left = 1
-Right = 4 #postive speed means going backward
+
 #GYRO = GyroSensor()
 #GYRO.mode = "GYRO-ANG"
 
-'''
-def stop_when_rotation_complete(angle):
-    c_angle = GYRO.angle
-    iteration = 0
-    last_angle = 0
-    angle = int(angle)
 
-    while abs(GYRO.angle - c_angle) < angle:
-        if last_angle == GYRO.angle:
-            iteration += 1
-        else:
-            iteration = 0
-
-        last_angle = GYRO.angle
-        if iteration == 50:
-            break
-
-        sleep(0.005)
-        continue
-
-    stop()
-'''
-
-"""@util.retry(on_fail_message="The motors aren't connected")
-def is_motor_connected():
-    return (
-        FWDLEFT.connected
-        and FWDRIGHT.connected
-        and BWDLEFT.connected
-        and BWDRIGHT.connected
-    )"""
 def setTime (t):
     global TIME
     TIME = float(t)
 
 
 def stop_when_time_reach(t):
+    decoder.time = t
     global time_pass
     setTime(t)
     curr_time = time()
     while time()<curr_time+TIME:
-        time_pass = time() - curr_time
         sleep(0.01)
+        time_pass = time() - curr_time
     mc.stop_motors()
     decoder.is_moving = False
 
@@ -221,13 +189,13 @@ def move_forward_left(speed, time):
 
 def rotate_anti_clockwise(speed,angle):
     if angle == "-F":
-        mc.move_motor(FH,-speed)
-        mc.move_motor(SH,-speed)
+        mc.move_motor(FH,speed)
+        mc.move_motor(SH,speed)
         mc.move_motor(Left,speed)
         mc.move_motor(Right,speed)  
     else:
-        mc.move_motor(FH,-speed)
-        mc.move_motor(SH,-speed)
+        mc.move_motor(FH,speed)
+        mc.move_motor(SH,speed)
         mc.move_motor(Left,speed)
         mc.move_motor(Right,speed)   
         stop_when_time_reach(20)
@@ -263,13 +231,13 @@ def rotate_clockwise(speed, angle):
     #     mc.move_motor(BWDRIGHT,-speed) 
     #     stop_when_time_reach(time)
     if angle == '-F':
-        mc.move_motor(FH,speed)
-        mc.move_motor(SH,speed)  
+        mc.move_motor(FH,-speed)
+        mc.move_motor(SH,-speed)  
         mc.move_motor(Left,-speed)
         mc.move_motor(Right,-speed)
     else :
-        mc.move_motor(FH,speed)
-        mc.move_motor(SH,speed)  
+        mc.move_motor(FH,-speed)
+        mc.move_motor(SH,-speed)  
         mc.move_motor(Left,-speed)
         mc.move_motor(Right,-speed)
         stop_when_time_reach(20)
